@@ -8,4 +8,3 @@ Outside working node:
 sbatch run_heat_gpu.sh
 sbatch run_heat_gpu_data.sh
 sbatch run_heat_gpu_shared.sh
-sbatch run_heat_gpu_compare.sh
