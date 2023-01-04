@@ -32,13 +32,6 @@ __global__ void heat_kernel(const float* in, float* out)
 
         }
     }
-
-    /* Take care of boundaries */
-    out[get_index(y, 0, WIDTH)]  = LEFT;
-    out[get_index(y, -1, WIDTH)] = RIGHT;
-    out[get_index(0, x, 0)] = TOP;
-    out[get_index(HEIGHT-1, x, WIDTH)] = BOTTOM;
-
 }
 
 int main(void)
@@ -48,6 +41,7 @@ int main(void)
 
     /* Initialize the data */
     data_init(u0);
+    memcpy(u1, u0, N_POINTS*sizeof(float));
 
     float* d_u0;
     float* d_u1;
@@ -89,7 +83,7 @@ int main(void)
     printf("#2D HEAT EQUATION - CUDA execution time: %f ms\n", time);
 
     /* Save result to the file */
-    //print_result(u1);
+    print_result(u1);
 
     /* Release the memory */
     free(u0);

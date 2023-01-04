@@ -23,36 +23,36 @@ __global__ void heat_kernel(const float* in, float* out)
     int s_y = threadIdx.y + 1;
     int s_n = BLOCK_SIZE_Y + 2;
 
-    /* Load data into shared memory */
     int global_idx = get_index(y, x, WIDTH);
     int shared_idx = get_index(s_y, s_x, s_n);
     shared_buffer[shared_idx] = in[global_idx]; // Central element
-
-    if (s_y == 1)               // Top element
-    {
-        shared_buffer[shared_idx-s_n] = in[global_idx-WIDTH];
-    }
-    if (s_y == BLOCK_SIZE_X)    // Bottom element
-    {
-        shared_buffer[shared_idx+s_n] = in[global_idx+WIDTH];
-    }
-    if (s_x == 1)               // Left element
-    {
-        shared_buffer[shared_idx-1] = in[global_idx-1];
-    }
-    if (s_x == BLOCK_SIZE_Y)    // Right element
-    {
-        shared_buffer[shared_idx+1] = in[global_idx+1];
-    }
-
-    /* Make sure all the data is loaded at this point */
-    __syncthreads();
 
     /* 2D Heat Equation */
     if (y > 0 && y < HEIGHT-1)
     {
         if (x > 0 && x < WIDTH-1)
         {
+            /* Load data into shared memory */
+            if (s_y == 1)               // Top element
+            {
+                shared_buffer[shared_idx-s_n] = in[global_idx-WIDTH];
+            }
+            if (s_y == BLOCK_SIZE_X)    // Bottom element
+            {
+                shared_buffer[shared_idx+s_n] = in[global_idx+WIDTH];
+            }
+            if (s_x == 1)               // Left element
+            {
+                shared_buffer[shared_idx-1] = in[global_idx-1];
+            }
+            if (s_x == BLOCK_SIZE_Y)    // Right element
+            {
+                shared_buffer[shared_idx+1] = in[global_idx+1];
+            }
+
+            /* Make sure all the data is loaded at this point */
+            __syncthreads();
+
             float uij   = shared_buffer[get_index(s_y, s_x, s_n)];
             float uim1j = shared_buffer[get_index(s_y-1, s_x, s_n)];
             float uijm1 = shared_buffer[get_index(s_y, s_x-1, s_n)];
@@ -110,7 +110,7 @@ int main(void)
     printf("#2D HEAT EQUATION - CUDA execution time: %f ms\n", time);
 
     /* Save result to the file */
-    //print_result(u0);
+    print_result(u0);
 
     /* Release the memory */
     free(u0);
