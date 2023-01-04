@@ -1,0 +1,10 @@
+srun -N 1 --ntasks-per-node=1 --gres=gpu:1 -p plgrid-gpu-v100 -A plgpiask2022-gpu --reservation=piask_tue_gpu -t 1:30:00 --pty /bin/bash
+module add cuda
+nvcc heat_gpu.cu -o heat_gpu_app
+nvcc heat_gpu_data.cu -o heat_gpu_data_app
+nvcc heat_gpu_shared.cu -o heat_gpu_shared_app
+
+Outside working node:
+sbatch run_heat_gpu.sh
+sbatch run_heat_gpu_data.sh
+sbatch run_heat_gpu_shared.sh
